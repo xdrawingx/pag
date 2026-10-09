@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de PC</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #f4f4f9; }
+    .filtros { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .pc-card { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 5px solid #007bff; }
+  </style>
+</head>
+<body>
+  <h2>Arma tu PC Ideal</h2>
+  
+  <div class="filtros">
+    <label>Precio Máximo: $<span id="precioVal">1500</span></label><br>
+    <input type="range" id="precio" min="500" max="2500" step="100" value="1500" oninput="filtrar()"><br><br>
+
+    <label>RAM mínima:</label>
+    <select id="ram" onchange="filtrar()">
+      <option value="0">Todas</option>
+      <option value="16">16 GB</option>
+      <option value="32">32 GB</option>
+    </select>
+  </div>
+
+  <div id="resultados"></div>
+
+  <script>
+    const pcs = [
+      { nombre: "PC Gamer Entrada", precio: 800, ram: 16 },
+      { nombre: "PC Gamer Media", precio: 1300, ram: 16 },
+      { nombre: "PC Pro Streamer", precio: 1900, ram: 32 }
+    ];
+
+    function filtrar() {
+      const maxPrecio = document.getElementById('precio').value;
+      const minRam = document.getElementById('ram').value;
+      document.getElementById('precioVal').innerText = maxPrecio;
+
+      const res = pcs.filter(pc => pc.precio <= maxPrecio && pc.ram >= minRam);
+      
+      document.getElementById('resultados').innerHTML = res.map(pc => `
+        <div class="pc-card">
+          <h3>${pc.nombre}</h3>
+          <p>Precio: $${pc.precio} | RAM: ${pc.ram}GB</p>
+        </div>
+      `).join('') || '<p>No se encontraron computadoras con esos filtros.</p>';
+    }
+
+    filtrar();
+  </script>
+</body>
+</html>
