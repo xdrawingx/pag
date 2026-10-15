@@ -3,270 +3,261 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tienda de PCs Personalizada</title>
+  <title>Tienda de PCs - Encuentra tu equipo ideal</title>
   <style>
     :root {
       --bg-primary: #0f172a;
       --bg-secondary: #1e293b;
       --border-color: #334155;
       --accent: #38bdf8;
-      --accent-hover: #0ea5e9;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
-      --success: #22c55e;
     }
 
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body { background-color: var(--bg-primary); color: var(--text-main); padding: 15px; margin: 0; }
     
     .header { text-align: center; margin-bottom: 20px; }
-    h1 { color: var(--accent); font-size: 1.6rem; margin-bottom: 5px; }
-    .subtitle { color: var(--text-muted); font-size: 0.9rem; }
+    h1 { color: var(--accent); font-size: 1.5rem; margin-bottom: 5px; }
+    .subtitle { color: var(--text-muted); font-size: 0.85rem; }
 
-    /* Panel de Filtros */
+    /* 3 RECUPADROS DE CATEGORÍAS PRINCIPALES */
+    .categorias-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cat-card {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-card:hover, .cat-card.activo {
+      border-color: var(--accent);
+      background: #1e3a8a;
+    }
+
+    .cat-card .icon { font-size: 1.8rem; margin-bottom: 5px; }
+    .cat-card span { font-size: 0.8rem; font-weight: bold; display: block; }
+
+    /* BOTÓN PARA ABRIR FILTROS AVANZADOS */
+    .btn-toggle-filtros {
+      width: 100%;
+      background: var(--bg-secondary);
+      color: var(--accent);
+      border: 1px dashed var(--border-color);
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* PANEL DE FILTROS OCULTO POR DEFECTO */
     .panel-filtros {
       background: var(--bg-secondary);
-      padding: 20px;
-      border-radius: 14px;
+      padding: 15px;
+      border-radius: 12px;
       margin-bottom: 20px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-    }
-    
-    .campo { margin-bottom: 16px; }
-    .campo:last-child { margin-bottom: 0; }
-    
-    label { display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-    
-    input[type="text"], select, input[type="range"] {
-      width: 100%;
-      padding: 12px;
-      background: #0b0f19;
-      color: #fff;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
+      display: none; /* Oculto inicialmente */
     }
 
-    input[type="text"]:focus, select:focus {
-      border-color: var(--accent);
-    }
-    
-    .precio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .precio-val { color: var(--accent); font-weight: bold; font-size: 1.1rem; }
+    .panel-filtros.mostrar { display: block; }
+    .campo { margin-bottom: 12px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.8rem; color: var(--text-muted); }
+    select, input[type="range"] { width: 100%; padding: 10px; background: #0b0f19; color: #fff; border: 1px solid var(--border-color); border-radius: 8px; }
 
-    /* Tarjetas de Producto */
+    /* TARJETAS DE LAS PCS (CON FOTO Y INFO) */
     .grid-pcs { display: grid; gap: 16px; }
     
     .card-pc {
       background: var(--bg-secondary);
       border-radius: 14px;
-      padding: 18px;
+      overflow: hidden;
       border: 1px solid var(--border-color);
-      border-left: 5px solid var(--accent);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    .card-pc:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
 
-    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-    .card-pc h3 { margin: 0; color: #fff; font-size: 1.15rem; }
-    .precio-tag { font-size: 1.25rem; font-weight: bold; color: #4ade80; }
-    
-    .specs { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 15px; }
-    .no-res { text-align: center; color: var(--text-muted); padding: 30px; background: var(--bg-secondary); border-radius: 12px; }
+    .pc-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      background: #334155; /* Fondo por si carga lento la imagen */
+    }
 
-    /* Botones de acción */
-    .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
-    
-    .btn {
-      padding: 10px 14px;
+    .pc-content { padding: 16px; }
+    .card-pc h3 { margin: 0 0 8px 0; font-size: 1.1rem; color: #fff; }
+    .precio-tag { font-size: 1.2rem; font-weight: bold; color: #4ade80; margin-bottom: 10px; }
+    .specs { font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 15px; }
+
+    .btn-wa {
+      display: block;
+      width: 100%;
+      background-color: #25D366;
+      color: white;
+      text-align: center;
+      padding: 12px;
       text-decoration: none;
       border-radius: 8px;
       font-weight: bold;
-      font-size: 0.85rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: opacity 0.2s;
+      font-size: 0.9rem;
     }
-    .btn:active { opacity: 0.8; }
-    .btn-wa { background-color: #25D366; color: white; }
-    .btn-comprar { background-color: var(--accent); color: var(--bg-primary); }
+
+    .no-res { text-align: center; color: var(--text-muted); padding: 30px; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>Arma tu PC Ideal</h1>
-    <div class="subtitle">Filtra por componentes, presupuesto y especificaciones</div>
+    <h1>¿Qué tipo de PC buscas?</h1>
+    <div class="subtitle">Selecciona una categoría o despliega los filtros</div>
   </div>
 
-  <div class="panel-filtros">
-    <!-- NUEVA BARRA DE BÚSQUEDA POR TEXTO -->
-    <div class="campo">
-      <label>Búsqueda por texto (Procesador, Marca, Nombre):</label>
-      <input type="text" id="buscadorTexto" placeholder="Ej. RTX, Ryzen, Económica..." oninput="filtrar()">
+  <!-- 1. LOS 3 RECUADROS DE CATEGORÍAS -->
+  <div class="categorias-grid">
+    <div class="cat-card" onclick="seleccionarCategoria('oficina', this)">
+      <div class="icon">💼</div>
+      <span>Oficina</span>
     </div>
-
-    <div class="campo">
-      <div class="precio-header">
-        <label style="margin:0;">Precio Máximo</label>
-        <span class="precio-val" id="precioTxt">$3,000 USD</span>
-      </div>
-      <input type="range" id="precio" min="500" max="3000" step="100" value="3000" oninput="filtrar()">
+    <div class="cat-card" onclick="seleccionarCategoria('gaming', this)">
+      <div class="icon">🎮</div>
+      <span>Gaming</span>
     </div>
-
-    <div class="campo">
-      <label>Memoria RAM mínima:</label>
-      <select id="ram" onchange="filtrar()">
-        <option value="0">Cualquiera</option>
-        <option value="16">16 GB</option>
-        <option value="32">32 GB</option>
-        <option value="64">64 GB</option>
-      </select>
+    <div class="cat-card" onclick="seleccionarCategoria('streamer', this)">
+      <div class="icon">🚀</div>
+      <span>Streamer</span>
     </div>
+  </div>
 
+  <!-- BOTÓN PARA FILTROS AVANZADOS -->
+  <button class="btn-toggle-filtros" onclick="alternarFiltros()">⚙️ Ajustar Precios y Filtros Avanzados</button>
+
+  <!-- PANEL DE FILTROS AVANZADOS (OCULTO) -->
+  <div class="panel-filtros" id="panelFiltros">
     <div class="campo">
-      <label>Monitor (Frecuencia en Hz):</label>
-      <select id="hz" onchange="filtrar()">
-        <option value="0">Cualquiera</option>
-        <option value="144">144 Hz o más</option>
-        <option value="240">240 Hz o más</option>
-      </select>
+      <label>Precio Máximo: $<span id="precioVal">3,000</span> USD</label>
+      <input type="range" id="precio" min="400" max="3000" step="100" value="3000" oninput="filtrar()">
     </div>
-
     <div class="campo">
       <label>Tarjeta Gráfica:</label>
       <select id="gpu" onchange="filtrar()">
-        <option value="todas">Todas las marcas</option>
-        <option value="NVIDIA">NVIDIA GeForce</option>
-        <option value="AMD">AMD Radeon</option>
+        <option value="todas">Todas</option>
+        <option value="NVIDIA">NVIDIA</option>
+        <option value="AMD">AMD</option>
+        <option value="Integrada">Gráficos Integrados</option>
       </select>
     </div>
   </div>
 
+  <!-- RESULTADOS -->
   <div class="grid-pcs" id="contenedorPcs"></div>
 
   <script>
+    // Variable global para guardar la categoría seleccionada ('todos', 'oficina', 'gaming', 'streamer')
+    let categoriaActual = 'todos';
+
+    // Base de datos con fotos reales de ejemplo y categoría asignada
     const computadoras = [
       { 
-        nombre: "PC Económica Gaming", 
-        precio: 650, 
+        nombre: "PC Oficina Básica", 
+        categoria: "oficina",
+        precio: 450, 
         ram: 16, 
-        hz: 75, 
+        gpuMarca: "Integrada", 
+        gpuModelo: "Gráficos Vega",
+        imagen: "https://images.unsplash.com/photo-1587831994791-bcac16773215?w=500&auto=format&fit=crop&q=60",
+        whatsapp: "5215512345678"
+      },
+      { 
+        nombre: "PC Gamer Entrada", 
+        categoria: "gaming",
+        precio: 850, 
+        ram: 16, 
         gpuMarca: "AMD", 
-        gpuModelo: "Radeon RX 6600",
-        whatsapp: "5215512345678",
-        linkCompra: "https://midominio.com/comprar/pc-economica" 
+        gpuModelo: "RX 6600",
+        imagen: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&auto=format&fit=crop&q=60",
+        whatsapp: "5215512345678"
       },
       { 
-        nombre: "PC Balanced Streamer", 
-        precio: 1200, 
-        ram: 16, 
-        hz: 144, 
-        gpuMarca: "NVIDIA", 
-        gpuModelo: "RTX 4060",
-        whatsapp: "5215512345678",
-        linkCompra: "" 
-      },
-      { 
-        nombre: "PC Pro eSports", 
-        precio: 1750, 
+        nombre: "PC Pro Streamer & Edición", 
+        categoria: "streamer",
+        precio: 1650, 
         ram: 32, 
-        hz: 240, 
         gpuMarca: "NVIDIA", 
         gpuModelo: "RTX 4070",
-        whatsapp: "5215512345678",
-        linkCompra: "https://midominio.com/comprar/pc-pro" 
-      },
-      { 
-        nombre: "PC Extreme Workstation", 
-        precio: 2800, 
-        ram: 64, 
-        hz: 240, 
-        gpuMarca: "NVIDIA", 
-        gpuModelo: "RTX 4080 Super",
-        whatsapp: "5215512345678",
-        linkCompra: "https://midominio.com/comprar/pc-extreme" 
-      },
-      { 
-        nombre: "PC AMD Gaming Beast", 
-        precio: 1450, 
-        ram: 32, 
-        hz: 144, 
-        gpuMarca: "AMD", 
-        gpuModelo: "RX 7800 XT",
-        whatsapp: "5215512345678",
-        linkCompra: "" 
+        imagen: "https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&auto=format&fit=crop&q=60",
+        whatsapp: "5215512345678"
       }
     ];
 
-    function filtrar() {
-      const textoBuscado = document.getElementById('buscadorTexto').value.toLowerCase().trim();
-      const maxPrecio = parseInt(document.getElementById('precio').value);
-      const minRam = parseInt(document.getElementById('ram').value);
-      const minHz = parseInt(document.getElementById('hz').value);
-      const gpuSeleccionada = document.getElementById('gpu').value;
+    function seleccionarCategoria(cat, elemento) {
+      // Quitar clase activo de todos y ponérsela al clickeado
+      document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('activo'));
+      
+      if (categoriaActual === cat) {
+        categoriaActual = 'todos'; // Si vuelve a hacer clic, deselecciona
+      } else {
+        categoriaActual = cat;
+        elemento.classList.add('activo');
+      }
+      filtrar();
+    }
 
-      document.getElementById('precioTxt').innerText = `$${maxPrecio.toLocaleString()} USD`;
+    function alternarFiltros() {
+      const panel = document.getElementById('panelFiltros');
+      panel.classList.toggle('mostrar');
+    }
+
+    function filtrar() {
+      const maxPrecio = parseInt(document.getElementById('precio').value);
+      const gpuSeleccionada = document.getElementById('gpu').value;
+      document.getElementById('precioVal').innerText = maxPrecio.toLocaleString();
 
       const resultados = computadoras.filter(pc => {
-        // Combinar todos los textos del equipo para buscar coincidencias
-        const textoCompleto = `${pc.nombre} ${pc.gpuModelo} ${pc.gpuMarca}`.toLowerCase();
-        
-        const cumpleTexto = textoBuscado === "" || textoCompleto.includes(textoBuscado);
+        const cumpleCategoria = categoriaActual === 'todos' || pc.categoria === categoriaActual;
         const cumplePrecio = pc.precio <= maxPrecio;
-        const cumpleRam = pc.ram >= minRam;
-        const cumpleHz = pc.hz >= minHz;
-        const cumpleGpu = gpuSeleccionada === "todas" || pc.gpuMarca === gpuSeleccionada;
+        const cumpleGpu = gpuSeleccionada === 'todas' || pc.gpuMarca === gpuSeleccionada;
 
-        return cumpleTexto && cumplePrecio && cumpleRam && cumpleHz && cumpleGpu;
+        return cumpleCategoria && cumplePrecio && cumpleGpu;
       });
 
       const contenedor = document.getElementById('contenedorPcs');
 
       if (resultados.length === 0) {
-        contenedor.innerHTML = '<div class="no-res">No se encontraron equipos con esas especificaciones o texto de búsqueda. Intenta ajustar los filtros.</div>';
+        contenedor.innerHTML = '<div class="no-res">No hay computadoras con esta combinación. Prueba cambiando la categoría o subiendo el presupuesto.</div>';
         return;
       }
 
       contenedor.innerHTML = resultados.map(pc => {
-        const mensajeWA = encodeURIComponent(`¡Hola! Me interesa la ${pc.nombre} de $${pc.precio} USD (${pc.gpuModelo}). ¿Está disponible?`);
-        const urlWhatsapp = `https://wa.me/${pc.whatsapp}?text=${mensajeWA}`;
-
+        const mensajeWA = encodeURIComponent(`¡Hola! Me interesa la ${pc.nombre} de $${pc.precio} USD. ¿Está disponible?`);
         return `
           <div class="card-pc">
-            <div class="card-header">
+            <img src="${pc.imagen}" alt="${pc.nombre}" class="pc-img">
+            <div class="pc-content">
               <h3>${pc.nombre}</h3>
               <div class="precio-tag">$${pc.precio} USD</div>
-            </div>
-            <div class="specs">
-              ⚡ <b>Tarjeta Gráfica:</b> ${pc.gpuModelo}<br>
-              🧠 <b>Memoria RAM:</b> ${pc.ram} GB<br>
-              🖥️ <b>Monitor:</b> ${pc.hz} Hz
-            </div>
-            <div class="acciones">
-              <a href="${urlWhatsapp}" target="_blank" class="btn btn-wa">
+              <div class="specs">
+                ⚡ <b>Gráfica:</b> ${pc.gpuModelo}<br>
+                🧠 <b>RAM:</b> ${pc.ram} GB
+              </div>
+              <a href="https://wa.me/${pc.whatsapp}?text=${mensajeWA}" target="_blank" class="btn-wa">
                 💬 Preguntar por WhatsApp
               </a>
-              ${pc.linkCompra ? `
-                <a href="${pc.linkCompra}" target="_blank" class="btn btn-comprar">
-                  🛒 Comprar ahora
-                </a>
-              ` : ''}
             </div>
           </div>
         `;
       }).join('');
     }
 
-    // Ejecutar filtro inicial
+    // Ejecutar al iniciar
     filtrar();
   </script>
 </body>
